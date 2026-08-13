@@ -1,4 +1,4 @@
-\# psfFold
+# psfFold
 
 
 
@@ -6,19 +6,19 @@ A project focused on generating and experimenting with camera Point Spread Funct
 
 
 
-\## Project Purpose
+## Project Purpose
 
 This repository contains tools and experiments for simulating realistic camera blur:
 
-\- Gaussian PSF
+- Gaussian PSF
 
-\- Airy disk (diffraction)
+- Airy disk (diffraction)
 
-\- Motion blur
+- Motion blur
 
-\- Atmospheric scattering
+- Atmospheric scattering
 
-\- Sensor crosstalk
+- Sensor crosstalk
 
 
 
@@ -26,7 +26,7 @@ The goal is to create realistic synthetic images that match real camera behavior
 
 
 
-\## Installation Instructions
+## Installation Instructions
 
 Create a dedicated environment:
 
@@ -46,7 +46,7 @@ pip install scipy scikit-image numpy opencv-python pillow
 
 
 
-\## Usage Examples
+## Usage Examples
 
 Run PSF scripts:
 
@@ -60,7 +60,7 @@ python psf\_airy.py
 
 
 
-\## Dataset Description
+## Dataset Description
 
 This project works with any RGB or grayscale images.  
 
@@ -68,17 +68,17 @@ You can place your test images inside the folder and apply PSF kernels to simula
 
 
 
-\## Future Plans
+## Future Plans
 
-\- Add physically accurate PSF based on real camera parameters
+- Add physically accurate PSF based on real camera parameters
 
-\- Add atmospheric blur models
+- Add atmospheric blur models
 
-\- Add batch processing for large datasets
+- Add batch processing for large datasets
 
-\- Add visualization tools for PSF kernels
+- Add visualization tools for PSF kernels
 
-\- Add integration with Stable Diffusion for realistic synthetic data
+- Add integration with Stable Diffusion for realistic synthetic data
 
 
 
