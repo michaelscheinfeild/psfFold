@@ -1,0 +1,42 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Micromamba / Conda
+*.conda
+*.mamba
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Images
+*.png
+*.jpg
+*.jpeg
+outputs/
+results/
+
+# PSF kernels
+kernels/
+*.npy
+
+# VSCode
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
