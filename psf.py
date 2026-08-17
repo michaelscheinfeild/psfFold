@@ -28,7 +28,7 @@ class PSFSimulator:
         return cv2.filter2D(img, -1, kernel)
 
     def apply_motion(
-        self, img: np.ndarray, length: int = 15, angle: float = 0.0
+        self, img: np.ndarray, length: float = 15, angle: float = 0.0
     ) -> np.ndarray:
         """Directional blur simulating drone/camera motion during exposure."""
         kernel = self._motion_kernel(length, angle)
@@ -108,13 +108,41 @@ class PSFSimulator:
         return kernel.astype(np.float32)
 
     @staticmethod
-    def _motion_kernel(length: int, angle: float) -> np.ndarray:
-        """Build a normalized line kernel representing linear motion blur."""
-        size = max(int(length), 1)
-        kernel = np.zeros((size, size), dtype=np.float32)
-        kernel[size // 2, :] = 1.0
-        center = (size / 2.0, size / 2.0)
-        rot_mat = cv2.getRotationMatrix2D(center, angle, 1.0)
-        kernel = cv2.warpAffine(kernel, rot_mat, (size, size))
+    def _motion_kernel(length: float, angle: float) -> np.ndarray:
+        """Build a normalized line kernel representing linear motion blur.
+
+        The streak is supersampled along the motion direction and splatted with
+        bilinear weights, so it stays exactly centred (no sub-pixel image shift),
+        remains direction-dependent for short streaks (length <= 2 px), and is
+        never clipped at diagonal angles. ``angle`` is in degrees, counter-clockwise.
+        """
+        length = max(float(length), 0.0)
+        size = max(3, 2 * int(np.ceil(length / 2.0)) + 1)
+        center = (size - 1) / 2.0
+
+        theta = np.radians(angle)
+        # image y grows downward, so a counter-clockwise angle negates dy
+        ux, uy = np.cos(theta), -np.sin(theta)
+
+        n_samples = max(2, int(np.ceil(length * 16.0)) + 1)
+        t = np.linspace(-length / 2.0, length / 2.0, n_samples)
+        xs = center + t * ux
+        ys = center + t * uy
+
+        # Bilinear splat of each sample into the 4 surrounding kernel cells.
+        x0 = np.floor(xs).astype(int)
+        y0 = np.floor(ys).astype(int)
+        fx = xs - x0
+        fy = ys - y0
+
+        kernel = np.zeros((size, size), dtype=np.float64)
+        for dy, wy in ((0, 1.0 - fy), (1, fy)):
+            for dx, wx in ((0, 1.0 - fx), (1, fx)):
+                yy = y0 + dy
+                xx = x0 + dx
+                ok = (yy >= 0) & (yy < size) & (xx >= 0) & (xx < size)
+                np.add.at(kernel, (yy[ok], xx[ok]), (wy * wx)[ok])
+
         total = kernel.sum()
-        return kernel / total if total != 0 else kernel
+        kernel = kernel / total if total != 0 else kernel
+        return kernel.astype(np.float32)
